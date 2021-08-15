@@ -35,6 +35,22 @@ else:
     with open("clientId.secret", "a") as myfile:
         myfile.write(clientId)
     logging.info("Spotify client ID saved to 'clientId.secret'")
+
+# Get Spotify secret from file or ask for secret and save to file
+if os.path.exists("spotifySecret.secret"):
+    logging.debug("'spotifySecret.secret' exists")
+    with open("spotifySecret.secret") as file:
+        spotifySecret = file.read().replace("\n", "")
+    logging.info("Spotify secret retrieved from 'spotifySecret.secret'")
+else:
+    logging.debug("'spotifySecret.secret' does not exist")
+    open("spotifySecret.secret", "w+")
+    logging.info("'spotifySecret.secret' created")
+    spotifySecret = input("Spotify secret: ")
+    with open("spotifySecret.secret", "a") as myfile:
+        myfile.write(spotifySecret)
+    logging.info("Spotify client ID saved to 'spotifySecret.secret'")
+
 # Get Spotify token from file or ask for token and save to file
 if os.path.exists("spotifyToken.secret"):
     logging.debug("'spotifyToken.secret' exists")
@@ -45,7 +61,7 @@ else:
     logging.debug("'spotifyToken.secret' does not exist")
     open("spotifyToken.secret", "w+")
     logging.info("'spotifyToken.secret' created")
-    spotifyToken = input("Spotify client ID: ")
+    spotifyToken = input("Spotify token: ")
     with open("spotifyToken.secret", "a") as myfile:
         myfile.write(spotifyToken)
-    logging.info("Spotify client ID saved to 'spotifyToken.secret'")
+    logging.info("Spotify token saved to 'spotifyToken.secret'")
