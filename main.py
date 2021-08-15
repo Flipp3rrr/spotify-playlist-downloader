@@ -21,47 +21,26 @@ logging.info("Succesfully loaded modules & started logging")
 # Get current directory
 runDir = os.path.dirname(__file__)
 
-# Get Spotify client ID from file or ask for ID and save to file
-if os.path.exists("clientId.secret"):
-    logging.debug("'clientId.secret' exists")
-    with open("clientId.secret", "r") as file:
-        clientId = file.read().replace("\n", "")
-    logging.info("Spotify client ID retrieved from 'clientId.secret'")
-else:
-    logging.debug("'clientId.secret' does not exist")
-    open("clientId.secret", "w+")
-    logging.info("'clientId.secret' created")
-    clientId = input("Spotify client ID: ")
-    with open("clientId.secret", "a") as myfile:
-        myfile.write(clientId)
-    logging.info("Spotify client ID saved to 'clientId.secret'")
+def retrieveFromFile(fileName, purpose):
+    # Check for and then read data from file
+    if os.path.exists(fileName):
+        logging.debug("Checked for '{file}' and it exists").format(file=fileName)
+        with open(fileName, "r") as file:
+            dataFromFile = file.read().replace("\n", "")
+        logging.debug("Data retrieved from '{file}'").format(file=fileName)
+        # Return data
+        return(dataFromFile)
+    # Ask for data and write if file didn't exist in check
+    else:
+        logging.debug("Checked for '{file}' and it does not exist").format(file=fileName)
+        open(fileName, "w+")
+        logging.info("'{file}' created").format(file=fileName)
+        dataToFile = input("{purpose}: ").format(purpose=purpose)
+        with open(fileName, "a") as file:
+            file.write(dataToFile)
+        logging.info("{purpose} saved to '{file}'").format(purpose=purpose, file=fileName)
+        return(dataToFile)
 
-# Get Spotify secret from file or ask for secret and save to file
-if os.path.exists("spotifySecret.secret"):
-    logging.debug("'spotifySecret.secret' exists")
-    with open("spotifySecret.secret") as file:
-        spotifySecret = file.read().replace("\n", "")
-    logging.info("Spotify secret retrieved from 'spotifySecret.secret'")
-else:
-    logging.debug("'spotifySecret.secret' does not exist")
-    open("spotifySecret.secret", "w+")
-    logging.info("'spotifySecret.secret' created")
-    spotifySecret = input("Spotify secret: ")
-    with open("spotifySecret.secret", "a") as myfile:
-        myfile.write(spotifySecret)
-    logging.info("Spotify client ID saved to 'spotifySecret.secret'")
-
-# Get Spotify token from file or ask for token and save to file
-if os.path.exists("spotifyToken.secret"):
-    logging.debug("'spotifyToken.secret' exists")
-    with open("spotifyToken.secret") as file:
-        spotifyToken = file.read().replace("\n", "")
-    logging.info("Spotify token retrieved from 'spotifyToken.secret'")
-else:
-    logging.debug("'spotifyToken.secret' does not exist")
-    open("spotifyToken.secret", "w+")
-    logging.info("'spotifyToken.secret' created")
-    spotifyToken = input("Spotify token: ")
-    with open("spotifyToken.secret", "a") as myfile:
-        myfile.write(spotifyToken)
-    logging.info("Spotify token saved to 'spotifyToken.secret'")
+clientId = retrieveFromFile("clientId.secret", "Spotify client ID")
+spotifySecret = retrieveFromFile("spotifySecret.secret", "Spotify secret")
+spotifyToken = retrieveFromFile("spotifyToken.secret", "Spotify token")
