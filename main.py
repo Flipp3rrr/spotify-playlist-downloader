@@ -14,7 +14,7 @@ if os.path.exists("spotify-playlist-downloader.log"):
     os.remove("spotify-playlist-downloader.log")
 
 open("spotify-playlist-downloader.log","w+")
-logging.basicConfig(filename='spotify-playlist-downloader.log', filemode='w', level=logging.WARNING)
+logging.basicConfig(filename='spotify-playlist-downloader.log', filemode='w', level=logging.DEBUG)
 
 logging.info("Succesfully loaded modules & started logging")
 
@@ -24,23 +24,42 @@ runDir = os.path.dirname(__file__)
 def retrieveFromFile(fileName, purpose):
     # Check for and then read data from file
     if os.path.exists(fileName):
-        logging.debug("Checked for '{file}' and it exists").format(file=fileName)
+        logging.info("Checked for '{file}' and it exists".format(file=fileName))
         with open(fileName, "r") as file:
             dataFromFile = file.read().replace("\n", "")
-        logging.debug("Data retrieved from '{file}'").format(file=fileName)
+        logging.info("Data retrieved from '{file}'".format(file=fileName))
         # Return data
         return(dataFromFile)
     # Ask for data and write if file didn't exist in check
     else:
-        logging.debug("Checked for '{file}' and it does not exist").format(file=fileName)
+        logging.info("Checked for '{file}' and it does not exist".format(file=fileName))
         open(fileName, "w+")
-        logging.info("'{file}' created").format(file=fileName)
-        dataToFile = input("{purpose}: ").format(purpose=purpose)
+        logging.info("'{file}' created".format(file=fileName))
+        dataToFile = input("{purpose}: ".format(purpose=purpose))
         with open(fileName, "a") as file:
             file.write(dataToFile)
-        logging.info("{purpose} saved to '{file}'").format(purpose=purpose, file=fileName)
+        logging.info("{purpose} saved to '{file}'".format(purpose=purpose, file=fileName))
         return(dataToFile)
 
-clientId = retrieveFromFile("clientId.secret", "Spotify client ID")
-spotifySecret = retrieveFromFile("spotifySecret.secret", "Spotify secret")
-spotifyToken = retrieveFromFile("spotifyToken.secret", "Spotify token")
+def deleteFile(fileName):
+    if os.path.exists(fileName):
+        logging.info("Checked for '{file}' and it exists".format(file=fileName))
+        os.remove(fileName)
+        logging.info("Deleted '{file}'".format(file=fileName))
+
+print("""SPOTIFY-PLAYLIST-DOWNLOADER
+
+[1] Download playlists
+[2] Delete data""")
+
+choice = input(">> ")
+
+if choice == "1":
+    clientId = retrieveFromFile("clientId.secret", "Spotify client ID")
+    spotifySecret = retrieveFromFile("spotifySecret.secret", "Spotify secret")
+    spotifyToken = retrieveFromFile("spotifyToken.secret", "Spotify token")
+
+elif choice == "2":
+    deleteFile("clientId.secret")
+    deleteFile("spotifySecret.secret")
+    deleteFile("spotifyToken.secret")
