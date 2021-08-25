@@ -9,6 +9,10 @@ import youtube_dl
 import os
 # Import logging
 import logging
+# Import JSON
+import json
+# Import time
+import time
 
 # Output log to 'spotify-playlist-downloader.log'
 if os.path.exists("spotify-playlist-downloader.log"):
@@ -73,7 +77,7 @@ def retrieveTrackIDs(ID):
         IDList.append(track["id"])
     return IDList
 
-def retrieveTrackNames(trackID):
+def retrieveTrackData(trackID):
     meta = sp.track(trackID)
     trackDetails = {"name": meta["name"], "artist": meta["album"]["artists"][0]["name"]}
     return trackDetails
@@ -88,6 +92,21 @@ if choice == "1":
     trackIDs = retrieveTrackIDs(playlistID)
     print("There are {songs} songs in this playlist".format(songs = len(trackIDs)))
     logging.debug("Got the following IDs from playlist {id}: {tracks}".format(id=playlistID, tracks=trackIDs))
+
+    tracks = []
+    for i in range(len(trackIDs)):
+        time.sleep(.1)
+        track = retrieveTrackData(trackIDs[i])
+        tracks.append(track)
+
+    if os.path.exists("playlist-{id}.json".format(id=playlistID)):
+        logging.info("Checked for '{file}' and it exists".format(file="playlist-{id}.json".format(id=playlistID)))
+        os.remove("playlist-{id}.json".format(id=playlistID))
+        logging.info("Deleted '{file}'".format(file="playlist-{id}.json".format(id=playlistID))) 
+        time.sleep(.1) 
+
+    with open("playlist-{id}.json".format(id=playlistID), "w+") as file:
+        json.dump(tracks, file, indent=4)
 
 elif choice == "2":
     deleteFile("clientID.secret")
