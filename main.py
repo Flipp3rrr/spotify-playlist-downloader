@@ -65,12 +65,7 @@ if choice == "1":
     clientCreds = SpotifyClientCredentials(clientID, spotifySecret)
     sp = spotipy.Spotify(client_credentials_manager=clientCreds)
 
-def retrieveTrackIDs(URL):
-    # playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
-    #                (34)                              (ID)(20)
-    # Now remove the first 34 and last 20 characters to get the playlist ID
-    playlistID = URL[34:-20]
-
+def retrieveTrackIDs(ID):
     IDList = []
     playlist = sp.playlist(playlistID)
     for item in playlist["tracks"]["items"]:
@@ -85,10 +80,18 @@ def retrieveTrackNames(trackID):
 
 if choice == "1":
     playlistURL = input("Playlist URL: ")
-    trackIDs = retrieveTrackIDs(playlistURL)
+    # playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
+    #                (34)                              (ID)(20)
+    # Now remove the first 34 and last 20 characters to get the playlist ID
+    playlistID = playlistURL[34:-20]
+
+    trackIDs = retrieveTrackIDs(playlistID)
     print("There are {songs} songs in this playlist".format(songs = len(trackIDs)))
-    print(trackIDs)
+    logging.debug("Got the following IDs from playlist {id}: {tracks}".format(id=playlistID, tracks=trackIDs))
 
 elif choice == "2":
     deleteFile("clientID.secret")
     deleteFile("spotifySecret.secret")
+
+else:
+    print("No such option")
