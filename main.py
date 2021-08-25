@@ -14,10 +14,11 @@ import json
 # Import time to sleep
 import time
 
-# Output log to 'spotify-playlist-downloader.log'
+# Check for log file, delete it if it exists
 if os.path.exists("spotify-playlist-downloader.log"):
     os.remove("spotify-playlist-downloader.log")
 
+# Start logging to 'spotify-playlist-downloader.log'
 open("spotify-playlist-downloader.log","w+")
 logging.basicConfig(filename='spotify-playlist-downloader.log', filemode='w', level=logging.DEBUG)
 
@@ -26,6 +27,7 @@ logging.info("Succesfully loaded modules & started logging")
 # Get current directory
 runDir = os.path.dirname(__file__)
 
+# Function to retrieve data from a file, or ask for the information to then put in a file
 def retrieveFromFile(fileName, purpose):
     # Check for and then read data from file
     if os.path.exists(fileName):
@@ -44,29 +46,37 @@ def retrieveFromFile(fileName, purpose):
         with open(fileName, "a") as file:
             file.write(dataToFile)
         logging.info("{purpose} saved to '{file}'".format(purpose=purpose, file=fileName))
+        # Return data
         return(dataToFile)
 
+# Function to delete a file, if it exists
 def deleteFile(fileName):
     if os.path.exists(fileName):
         logging.info("Checked for '{file}' and it exists".format(file=fileName))
         os.remove(fileName)
         logging.info("Deleted '{file}'".format(file=fileName))
 
+# Function to delete all files with 'ext' file extension, if any exist
 def deleteFileExt(ext):
+    # List all files in the current directory
     files = os.listdir(runDir)
+    # Check every file, delete it if it has 'ext' extension
     for item in files:
         if item.endswith(ext):
             os.remove(os.path.join(runDir, item))
             logging.info("Checked for '{ext}' and '{file}' exists, deleted".format(ext=ext, file=item))
 
-print("""SPOTIFY-PLAYLIST-DOWNLOADER
+# User options and input
+print("""
+SPOTIFY-PLAYLIST-DOWNLOADER
 (get you client ID and secret from 'developer.spotify.com')
 
 [1] Download playlists
-[2] Delete data""")
-
+[2] Delete data
+""")
 choice = input(">> ")
 
+# Choice '1', download playlist
 if choice == "1":
     # Get ID and secret
     clientID = retrieveFromFile("clientID.secret", "Spotify client ID")
@@ -76,6 +86,7 @@ if choice == "1":
     clientCreds = SpotifyClientCredentials(clientID, spotifySecret)
     sp = spotipy.Spotify(client_credentials_manager=clientCreds)
 
+# Function to retrieve track IDs from playlist
 def retrieveTrackIDs(ID):
     IDList = []
     playlist = sp.playlist(playlistID)
@@ -84,11 +95,13 @@ def retrieveTrackIDs(ID):
         IDList.append(track["id"])
     return IDList
 
+# Function to retrieve details from tracks
 def retrieveTrackData(trackID):
     meta = sp.track(trackID)
     trackDetails = {"name": meta["name"], "artist": meta["album"]["artists"][0]["name"]}
     return trackDetails
 
+# Continue choice '1', download playlist
 if choice == "1":
     playlistURL = input("Playlist URL: ")
     # playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
@@ -106,18 +119,22 @@ if choice == "1":
         track = retrieveTrackData(trackIDs[i])
         tracks.append(track)
 
+    # Check if a JSON file for the current playlist exists, delete it if it does
     if os.path.exists("playlist-{id}.json".format(id=playlistID)):
         logging.info("Checked for '{file}' and it exists".format(file="playlist-{id}.json".format(id=playlistID)))
         os.remove("playlist-{id}.json".format(id=playlistID))
         logging.info("Deleted '{file}'".format(file="playlist-{id}.json".format(id=playlistID))) 
         time.sleep(.1) 
 
+    # Dump data to file
     with open("playlist-{id}.json".format(id=playlistID), "w+") as file:
         json.dump(tracks, file, indent=4)
 
+# Choice 2, delete data
 elif choice == "2":
     deleteFileExt(".secret")
     deleteFileExt(".json")
 
+# Backup in case of ID10T error
 else:
     print("No such option")
