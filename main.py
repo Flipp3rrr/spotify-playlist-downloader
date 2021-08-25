@@ -9,9 +9,9 @@ import youtube_dl
 import os
 # Import logging
 import logging
-# Import JSON
+# Import JSON to dump data to a JSON file
 import json
-# Import time
+# Import time to sleep
 import time
 
 # Output log to 'spotify-playlist-downloader.log'
@@ -50,7 +50,14 @@ def deleteFile(fileName):
     if os.path.exists(fileName):
         logging.info("Checked for '{file}' and it exists".format(file=fileName))
         os.remove(fileName)
-        logging.info("Deleted '{file}'".format(file=fileName))    
+        logging.info("Deleted '{file}'".format(file=fileName))
+
+def deleteFileExt(ext):
+    files = os.listdir(runDir)
+    for item in files:
+        if item.endswith(ext):
+            os.remove(os.path.join(runDir, item))
+            logging.info("Checked for '{ext}' and '{file}' exists, deleted".format(ext=ext, file=item))
 
 print("""SPOTIFY-PLAYLIST-DOWNLOADER
 (get you client ID and secret from 'developer.spotify.com')
@@ -109,8 +116,8 @@ if choice == "1":
         json.dump(tracks, file, indent=4)
 
 elif choice == "2":
-    deleteFile("clientID.secret")
-    deleteFile("spotifySecret.secret")
+    deleteFileExt(".secret")
+    deleteFileExt(".json")
 
 else:
     print("No such option")
