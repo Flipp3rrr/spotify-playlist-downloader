@@ -1,5 +1,5 @@
 # Import Spotify.py to use Spotify features
-import spotify.sync as spotify
+import spotifypy
 # Import urllib.request to search YouTube
 import urllib.request
 # Import youtube_dl to download YouTube videos
@@ -57,9 +57,10 @@ choice = input(">> ")
 if choice == "1":
     clientId = retrieveFromFile("clientId.secret", "Spotify client ID")
     spotifySecret = retrieveFromFile("spotifySecret.secret", "Spotify secret")
-    spotifyToken = retrieveFromFile("spotifyToken.secret", "Spotify token")
+
+    playlistUrl = input("Playlist URL: ")
+    print(playlistUrl)
 
 elif choice == "2":
     deleteFile("clientId.secret")
     deleteFile("spotifySecret.secret")
-    deleteFile("spotifyToken.secret")
