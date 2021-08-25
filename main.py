@@ -1,5 +1,5 @@
 # Import Spotify.py to use Spotify features
-import spotifypy
+import spotipy
 # Import urllib.request to search YouTube
 import urllib.request
 # Import youtube_dl to download YouTube videos
@@ -48,6 +48,7 @@ def deleteFile(fileName):
         logging.info("Deleted '{file}'".format(file=fileName))
 
 print("""SPOTIFY-PLAYLIST-DOWNLOADER
+(get you client ID and secret from 'developer.spotify.com')
 
 [1] Download playlists
 [2] Delete data""")
