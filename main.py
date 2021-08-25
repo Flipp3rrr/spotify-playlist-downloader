@@ -47,6 +47,12 @@ def deleteFile(fileName):
         os.remove(fileName)
         logging.info("Deleted '{file}'".format(file=fileName))
 
+def retrieveIDs(URL):
+    # playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
+    #                (34)                              (ID)(20)
+    playlistID = URL[34:-20]
+    
+
 print("""SPOTIFY-PLAYLIST-DOWNLOADER
 (get you client ID and secret from 'developer.spotify.com')
 
@@ -59,8 +65,8 @@ if choice == "1":
     clientId = retrieveFromFile("clientId.secret", "Spotify client ID")
     spotifySecret = retrieveFromFile("spotifySecret.secret", "Spotify secret")
 
-    playlistUrl = input("Playlist URL: ")
-    print(playlistUrl)
+    playlistURL = input("Playlist URL: ")
+    retrieveIDs(playlistURL)
 
 elif choice == "2":
     deleteFile("clientId.secret")
