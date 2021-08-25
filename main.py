@@ -114,9 +114,9 @@ if choice == "1":
     logging.debug("Got the following IDs from playlist {id}: {tracks}".format(id=playlistID, tracks=trackIDs))
 
     tracks = []
-    for i in range(len(trackIDs)):
+    for a in range(len(trackIDs)):
         time.sleep(.1)
-        track = retrieveTrackData(trackIDs[i])
+        track = retrieveTrackData(trackIDs[a])
         tracks.append(track)
 
     # Check if a JSON file for the current playlist exists, delete it if it does
@@ -124,11 +124,14 @@ if choice == "1":
         logging.info("Checked for '{file}' and it exists".format(file="playlist-{id}.json".format(id=playlistID)))
         os.remove("playlist-{id}.json".format(id=playlistID))
         logging.info("Deleted '{file}'".format(file="playlist-{id}.json".format(id=playlistID))) 
-        time.sleep(.1) 
 
     # Dump data to file
     with open("playlist-{id}.json".format(id=playlistID), "w+") as file:
         json.dump(tracks, file, indent=4)
+    
+    for b in range(len(tracks)):
+        print(tracks[b])
+    print(type(tracks))
 
 # Choice 2, delete data
 elif choice == "2":
