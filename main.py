@@ -1,5 +1,6 @@
-# Import Spotify.py to use Spotify features
+# Import Spotipy to use Spotify features
 import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 # Import urllib.request to search YouTube
 import urllib.request
 # Import youtube_dl to download YouTube videos
@@ -45,13 +46,7 @@ def deleteFile(fileName):
     if os.path.exists(fileName):
         logging.info("Checked for '{file}' and it exists".format(file=fileName))
         os.remove(fileName)
-        logging.info("Deleted '{file}'".format(file=fileName))
-
-def retrieveIDs(URL):
-    # playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
-    #                (34)                              (ID)(20)
-    playlistID = URL[34:-20]
-    
+        logging.info("Deleted '{file}'".format(file=fileName))    
 
 print("""SPOTIFY-PLAYLIST-DOWNLOADER
 (get you client ID and secret from 'developer.spotify.com')
@@ -62,12 +57,38 @@ print("""SPOTIFY-PLAYLIST-DOWNLOADER
 choice = input(">> ")
 
 if choice == "1":
-    clientId = retrieveFromFile("clientId.secret", "Spotify client ID")
+    # Get ID and secret
+    clientID = retrieveFromFile("clientID.secret", "Spotify client ID")
     spotifySecret = retrieveFromFile("spotifySecret.secret", "Spotify secret")
 
+    # ID and secret to SpotifyClientCredentials
+    clientCreds = SpotifyClientCredentials(clientID, spotifySecret)
+    sp = spotipy.Spotify(client_credentials_manager=clientCreds)
+
+def retrieveTrackIDs(URL):
+    # playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
+    #                (34)                              (ID)(20)
+    # Now remove the first 34 and last 20 characters to get the playlist ID
+    playlistID = URL[34:-20]
+
+    IDList = []
+    playlist = sp.playlist(playlistID)
+    for item in playlist["tracks"]["items"]:
+        track = item["track"]
+        IDList.append(track["id"])
+    return IDList
+
+def retrieveTrackNames(trackID):
+    meta = sp.track(trackID)
+    trackDetails = {"name": meta["name"], "artist": meta["album"]["artists"][0]["name"]}
+    return trackDetails
+
+if choice == "1":
     playlistURL = input("Playlist URL: ")
-    retrieveIDs(playlistURL)
+    trackIDs = retrieveTrackIDs(playlistURL)
+    print("There are {songs} songs in this playlist".format(songs = len(trackIDs)))
+    print(trackIDs)
 
 elif choice == "2":
-    deleteFile("clientId.secret")
+    deleteFile("clientID.secret")
     deleteFile("spotifySecret.secret")
