@@ -175,8 +175,8 @@ if choice == "1":
         result = urllib.request.urlopen(youtubeURL, context=ctx)
 
         # Get first video ID from the results and put it in a URL
-        videoIDs = re.findall(r"watch\?v=(\S{11})", result.read().decode())
-        downloadURL = "https://www.youtube.com/watch?v=" + videoIDs[0]
+        videoID = re.findall(r"watch\?v=(\S{11})", result.read().decode())
+        downloadURL = "https://www.youtube.com/watch?v=" + videoID[0]
         print("Downloading '{track}' from '{url}'".format(track=currentTrackName, url=downloadURL))
 
         time.sleep(.1)
