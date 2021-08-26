@@ -178,7 +178,7 @@ if choice == "1":
         videoID = re.findall(r"watch\?v=(\S{11})", result.read().decode())
         downloadURL = "https://www.youtube.com/watch?v=" + videoID[0]
         print("Downloading '{track}' from '{url}'".format(track=currentTrackName, url=downloadURL))
-        logging.info("Downloading '{track}' from '{url}'".format(track=currentTrackName, url=downloadURL)
+        logging.info("Downloading '{track}' from '{url}'".format(track=currentTrackName, url=downloadURL))
 
         time.sleep(.1)
 
