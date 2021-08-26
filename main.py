@@ -13,6 +13,10 @@ import logging
 import json
 # Import time to sleep
 import time
+# Import SSL just so I can bypass SSL verification later
+import ssl
+# Regex yeet
+import re
 
 # Check for log file, delete it if it exists
 if os.path.exists("spotify-playlist-downloader.log"):
@@ -130,8 +134,31 @@ if choice == "1":
         json.dump(tracks, file, indent=4)
     
     for b in range(len(tracks)):
-        print(tracks[b])
-    print(type(tracks))
+        # Create search query
+        currentTrack = tracks[b]
+        currentTrackName = currentTrack["name"]
+        currentTrackArtist = currentTrack["artist"]
+        search = currentTrackName + " " + currentTrackArtist
+        search = search.encode("ascii")
+
+        # Fuck you SSL
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE 
+
+        # Create URL from query
+        youtubeURL = "http://www.youtube.com/results?search_query=" + search.replace(" ", "%20")
+        print(youtubeURL)
+
+        # Results
+        result = urllib.request.urlopen(str(youtubeURL), context=ctx)
+
+        # Get first video ID from the results and put it in a URL
+        videoIDs = re.findall(r"watch\?v=(\S{11})", result.read().decode())
+        downloadURL = "https://www.youtube.com/watch?v=" + videoIDs[0]
+        print("Downloading {track} from {url}".format(track=currentTrackName, url=downloadURL))
+
+        time.sleep(.1)
 
 # Choice 2, delete data
 elif choice == "2":
