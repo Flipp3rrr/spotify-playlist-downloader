@@ -6,6 +6,7 @@ A tool to download playlists from Spotify from YouTube
 * a client ID and client secret (from `developer.spotify.com`)
 ## Usage
 ## Contributing
+I don't expect anyone to contribute, but it's nice to have these resources that I used saved here.
 ### Resources
 #### youtube-dl
 * https://codefather.tech/blog/youtube-search-python/
