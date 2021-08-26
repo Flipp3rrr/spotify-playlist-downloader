@@ -182,26 +182,33 @@ if choice == "1":
         time.sleep(.1)
 
         # Download...
-        noSSL = {
-            "nocheckcertificate": True,
-        }
-        videoInfo = youtube_dl.YoutubeDL(noSSL).extract_info(url=downloadURL, download=False)
-        filename = f"{videoInfo['title']}.mp3"
-        filePath = os.path.join(runDir, filename)
-        options = {
-            "format": "bestaudio/best",
-            "keepvideo": False,
-            "outtmpl": filename,
-            # And again, fuck you SSL
-            "nocheckcertificate": True,
-        }
-        with youtube_dl.YoutubeDL(options) as ydl:
-            ydl.download([videoInfo['webpage_url']])
+        try:
+            noSSL = {
+                "nocheckcertificate": True,
+            }
+            videoInfo = youtube_dl.YoutubeDL(noSSL).extract_info(url=downloadURL, download=False)
+            filename = f"{videoInfo['title']}.mp3"
+            filePath = os.path.join(runDir, filename)
+            options = {
+                "format": "bestaudio/best",
+                "keepvideo": False,
+                "outtmpl": filename,
+                # And again, fuck you SSL
+                "nocheckcertificate": True,
+            }
+            with youtube_dl.YoutubeDL(options) as ydl:
+                ydl.download([videoInfo['webpage_url']])
+        except Exception as error:
+            logging.warning("Did not download {track} because of {error}".format(track=currentTrackName, error=error))
+            print("Did not download {track} because of {error}".format(track=currentTrackName, error=error))
 
-        # Move to 'playlistDir'
-        filePlace = os.path.join(playlistDir, filename)
-        shutil.move(filePath, playlistDir)
-        print("Downloaded {track} and moved to {location}".format(track=currentTrackName, location=filePlace))
+        try:
+            # Move to 'playlistDir'
+            filePlace = os.path.join(playlistDir, filename)
+            shutil.move(filePath, playlistDir)
+            print("Downloaded {track} and moved to {location}".format(track=currentTrackName, location=filePlace))
+        except Exception as error:
+            logging.warning("Couldn't move {file} because {error}".format(file=filename, error=error))
 
 # Choice 2, delete data
 elif choice == "2":
