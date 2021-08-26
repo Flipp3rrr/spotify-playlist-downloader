@@ -4,3 +4,4 @@
 .cache
 *.json
 /output/*
+.DS_Store
