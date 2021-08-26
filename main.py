@@ -17,6 +17,8 @@ import time
 import ssl
 # Regex yeet
 import re
+# Shutil to yeet things into place
+import shutil
 
 # Check for log file, delete it if it exists
 if os.path.exists("spotify-playlist-downloader.log"):
@@ -30,6 +32,11 @@ logging.info("Succesfully loaded modules & started logging")
 
 # Get current directory
 runDir = os.path.dirname(__file__)
+
+# Output directory, make it if it doesn't exist
+outDir = os.path.join(runDir, "output")
+if not os.path.exists(outDir):
+    os.makedirs(outDir)
 
 # Function to retrieve data from a file, or ask for the information to then put in a file
 def retrieveFromFile(fileName, purpose):
@@ -133,6 +140,17 @@ if choice == "1":
     with open("playlist-{id}.json".format(id=playlistID), "w+") as file:
         json.dump(tracks, file, indent=4)
     
+    # Playlist directory
+    playlistDir = os.path.join(outDir, "playlist-{id}/".format(id=playlistID))
+    
+    # Delete directory contents if it exists
+    if os.path.exists(playlistDir):
+        shutil.rmtree(playlistDir)
+
+    # Create directory if it doesn't exist
+    if not os.path.exists(playlistDir):
+        os.makedirs(playlistDir)
+
     for b in range(len(tracks)):
         # Create search query
         currentTrack = tracks[b]
@@ -162,6 +180,28 @@ if choice == "1":
         print("Downloading '{track}' from '{url}'".format(track=currentTrackName, url=downloadURL))
 
         time.sleep(.1)
+
+        # Download...
+        noSSL = {
+            "nocheckcertificate": True,
+        }
+        videoInfo = youtube_dl.YoutubeDL(noSSL).extract_info(url=downloadURL, download=False)
+        filename = f"{videoInfo['title']}.mp3"
+        filePath = os.path.join(runDir, filename)
+        options = {
+            "format": "bestaudio/best",
+            "keepvideo": False,
+            "outtmpl": filename,
+            # And again, fuck you SSL
+            "nocheckcertificate": True,
+        }
+        with youtube_dl.YoutubeDL(options) as ydl:
+            ydl.download([videoInfo['webpage_url']])
+
+        # Move to 'playlistDir'
+        filePlace = os.path.join(playlistDir, filename)
+        shutil.move(filePath, playlistDir)
+        print("Downloaded {track} and moved to {location}".format(track=currentTrackName, location=filePlace))
 
 # Choice 2, delete data
 elif choice == "2":
