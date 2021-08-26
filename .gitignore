@@ -5,3 +5,4 @@
 *.json
 /output/*
 .DS_Store
+*.part
