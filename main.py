@@ -138,8 +138,11 @@ if choice == "1":
         currentTrack = tracks[b]
         currentTrackName = currentTrack["name"]
         currentTrackArtist = currentTrack["artist"]
-        search = currentTrackName + " " + currentTrackArtist
-        search = search.encode("ascii")
+        searchUnsan = currentTrackName + " " + currentTrackArtist
+
+        # I need only alphanumeric characters or urllib will complain
+        search = re.sub("[^A-Za-z0-9]+", " ", searchUnsan)
+        logging.info("Changed '{search1}' to '{search2}'".format(search1=searchUnsan, search2=search))
 
         # Fuck you SSL
         ctx = ssl.create_default_context()
@@ -148,15 +151,15 @@ if choice == "1":
 
         # Create URL from query
         youtubeURL = "http://www.youtube.com/results?search_query=" + search.replace(" ", "%20")
-        print(youtubeURL)
 
         # Results
-        result = urllib.request.urlopen(str(youtubeURL), context=ctx)
+        logging.info("Getting results from {url}".format(url=youtubeURL))
+        result = urllib.request.urlopen(youtubeURL, context=ctx)
 
         # Get first video ID from the results and put it in a URL
         videoIDs = re.findall(r"watch\?v=(\S{11})", result.read().decode())
         downloadURL = "https://www.youtube.com/watch?v=" + videoIDs[0]
-        print("Downloading {track} from {url}".format(track=currentTrackName, url=downloadURL))
+        print("Downloading '{track}' from '{url}'".format(track=currentTrackName, url=downloadURL))
 
         time.sleep(.1)
 
