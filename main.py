@@ -22,6 +22,9 @@ import time
 import ssl
 # Import regex
 import re
+# Import unicodedata which will be used to convert special characters in song names and artist names,
+# because those have to be ascii
+import unicodedata
 
 # Check for log file, delete it if it exists
 if os.path.exists("spotify-playlist-downloader.log"):
@@ -161,9 +164,8 @@ if choice == "1":
         currentTrackArtist = currentTrack["artist"]
         searchUnsan = currentTrackName + " " + currentTrackArtist
 
-        # I need only alphanumeric characters or 'urllib' will complain,
-        # TODO: convert characters to closest ascii character
-        search = re.sub("[^A-Za-z0-9]+", " ", searchUnsan)
+        # Convert to ascii, otherwise urllib won't work
+        search = unicodedata.normalize('NFKD', searchUnsan).encode('ascii', 'ignore')
         logging.info("Changed '{search1}' to '{search2}'".format(search1=searchUnsan, search2=search))
 
         # Create 'ctx' context to bypass SSL when searching with 'urllib'
