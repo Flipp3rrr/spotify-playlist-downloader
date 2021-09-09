@@ -25,6 +25,8 @@ import re
 # Import unicodedata which will be used to convert special characters in song names and artist names,
 # because those have to be ascii
 import unicodedata
+# Import tkinter for the GUI
+import tkinter
 
 # Check for log file, delete it if it exists
 if os.path.exists("spotify-playlist-downloader.log"):
@@ -165,7 +167,9 @@ if choice == "1":
         search_unsan = current_track_name + " " + current_track_artist
 
         # Convert to ascii, otherwise urllib won't work
-        search = unicodedata.normalize('NFKD', search_unsan)
+        search1 = unicodedata.normalize('NFKD', search_unsan)
+        search2 = search1.replace(" ", "%20")
+        search = re.sub("[^A-Za-z0-9%]+", "", search2)
         logging.info("Changed '{search1}' to '{search2}'".format(search1=search_unsan, search2=search))
 
         # Create 'ctx' context to bypass SSL when searching with 'urllib'
