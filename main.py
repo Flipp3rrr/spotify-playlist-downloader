@@ -165,7 +165,7 @@ if choice == "1":
         search_unsan = current_track_name + " " + current_track_artist
 
         # Convert to ascii, otherwise urllib won't work
-        search = unicodedata.normalize('NFKD', search_unsan).encode('ascii', 'ignore')
+        search = unicodedata.normalize('NFKD', search_unsan)
         logging.info("Changed '{search1}' to '{search2}'".format(search1=search_unsan, search2=search))
 
         # Create 'ctx' context to bypass SSL when searching with 'urllib'
