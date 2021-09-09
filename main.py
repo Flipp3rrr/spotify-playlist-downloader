@@ -37,7 +37,7 @@ logging.info("Succesfully loaded modules & started logging")
 runDir = os.path.dirname(__file__)
 
 # Output directory, make it if it doesn't exist
-outDir = os.path.join(runDir, "output")
+outDir = os.path.join(runDir, "spotify-download-output")
 if not os.path.exists(outDir):
     os.makedirs(outDir)
 
@@ -64,19 +64,18 @@ def retrieveFromFile(fileName, purpose):
         return(dataToFile)
 
 # Function to delete a file, if it exists
-def deleteFile(fileName):
-    if os.path.exists(fileName):
+def deleteFile(fileName, directory):
+    if os.path.exists(os.path.join(directory, fileName)):
         logging.info("Checked for '{file}' and it exists".format(file=fileName))
-        os.remove(fileName)
+        os.remove(os.path.join(directory, fileName))
         logging.info("Deleted '{file}'".format(file=fileName))
 
 # Function to delete all files with 'ext' file extension in the 'directory' directory, if any exist
-def deleteFileExt(ext, directory):
-    # Check every file, delete it if it has 'ext' extension
-    for item in os.listdir(directory):
-        if item.endswith(ext):
-            os.remove(os.path.join(directory, item))
-            logging.info("Checked for '{ext}' and '{file}' exists, deleted".format(ext=ext, file=item))
+def deleteFileMatch(match, directory):
+    # Check every file, delete it if it starts with 'match'
+    for file in os.listdir(directory):
+        if file.startswith(match):
+            os.remove(os.path.join(runDir, file))
 
 # Function to retrieve track IDs from playlist
 def retrieveTrackIDs(ID):
@@ -227,10 +226,10 @@ if choice == "1":
 # Choice 2, delete data
 elif choice == "2":
     # Delete files that end up in the directory containing 'main.py'
-    deleteFileExt(".log", runDir)
-    deleteFileExt(".secret", runDir)
-    deleteFileExt(".json", runDir)
-    deleteFileExt(".mp3", runDir)
+    #deleteFile("spotify-playlist-downloader.log", runDir)
+    deleteFile("clientID.secret", runDir)
+    deleteFile("spotifySecret.secret", runDir)
+    deleteFileMatch("playlist-", runDir)
     # Delete everything in the output directory and the directory itself
     if os.path.exists(outDir):
         shutil.rmtree(outDir)
