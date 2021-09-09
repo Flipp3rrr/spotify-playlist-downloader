@@ -16,3 +16,5 @@ I don't expect anyone to contribute, but it's nice to have these resources that 
 #### spotipy
 * https://www.promptcloud.com/blog/extracting-songs-data-from-your-spotify-playlist-using-python/
 * https://spotipy.readthedocs.io/
+#### tkinter
+* https://docs.python.org/3/library/tkinter.html
