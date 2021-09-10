@@ -174,7 +174,7 @@ def download_playlist():
         ctx.verify_mode = ssl.CERT_NONE 
 
         # Create URL from query
-        youtube_url = "http://www.youtube.com/results?search_query=" + search.replace(" ", "%20")
+        youtube_url = "http://www.youtube.com/results?search_query={id}".format(id=search.replace(" ", "%20"))
 
         # Make request with 'youtube_url' and output results to 'result'
         logging.info("Getting results from {url}".format(url=youtube_url))
