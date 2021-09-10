@@ -1,32 +1,20 @@
 try:
-    # Import Spotipy to get the track list from the playlist and track information
     import spotipy
     from spotipy.oauth2 import SpotifyClientCredentials
-    # Import youtube_dl to download YouTube videos
     import youtube_dl
 except Exception as error:
     raise Exception("Failed to import either 'spotipy' or 'youtube_dl', {error}".format(error=error))
-# Import urllib.request which will later be used to search YouTube videos
 import urllib.request
-# Import os and shutil to do things with files and directories
 import os
 import shutil
-# Import logging
 import logging
-# Import JSON to dump data to a JSON file, it's not actually needed but it's nice to be able
-# to see the information I got from Spotify
 import json
-# Import time to wait for a short time so Spotify and YouTube won't think it's a DOS attack
 import time
-# Import SSL just so I can bypass SSL verification later
 import ssl
-# Import regex
 import re
-# Import unicodedata which will be used to convert special characters in song names and artist names,
-# because those have to be ascii
 import unicodedata
-# Import tkinter for the GUI
 import tkinter
+import argparse
 
 # Check for log file, delete it if it exists
 if os.path.exists("spotify-playlist-downloader.log"):
