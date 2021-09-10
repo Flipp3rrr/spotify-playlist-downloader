@@ -82,37 +82,11 @@ def delete_file_match(match, directory):
         if file.startswith(match):
             os.remove(os.path.join(run_dir, file))
 
-# Function to retrieve track IDs from playlist
-def retrieve_track_ids(id):
-    id_list = []
-    playlist = sp.playlist(playlist_id)
-    for item in playlist["tracks"]["items"]:
-        track = item["track"]
-        id_list.append(track["id"])
-    return id_list
-
-# Function to retrieve details from tracks
-def retrieve_track_data(track_id):
-    meta = sp.track(track_id)
-    # I only need the name of the track and the artist, get it here
-    track_details = {"name": meta["name"], "artist": meta["album"]["artists"][0]["name"]}
-    return track_details
-
-# User options and input
-print("""
-SPOTIFY-PLAYLIST-DOWNLOADER
-(get you client ID and secret from 'developer.spotify.com')
-
-[1] Download playlists
-[2] Delete data (client ID, secret, logs, output, etc.)
-""")
-choice = input(">> ")
-
-# Choice '1', download playlist
-if choice == "1":
+# Download playlist option
+def download_playlist():
     # Get ID and secret
-    client_id = retrieve_from_file("client_id.secret", "Spotify client ID")
-    spotify_secret = retrieve_from_file("spotify_secret.secret", "Spotify secret")
+    client_id = retrieve_from_file("client-id.secret", "Spotify client ID")
+    spotify_secret = retrieve_from_file("spotify-secret.secret", "Spotify secret")
 
     # ID and secret to SpotifyClientCredentials
     client_creds = SpotifyClientCredentials(client_id, spotify_secret)
@@ -229,16 +203,48 @@ if choice == "1":
             except Exception as error:
                 logging.warning("Couldn't move {file} because {error}".format(file=filename, error=error))
 
-# Choice 2, delete data
-elif choice == "2":
+# Function to retrieve track IDs from playlist
+def retrieve_track_ids(id):
+    id_list = []
+    playlist = sp.playlist(playlist_id)
+    for item in playlist["tracks"]["items"]:
+        track = item["track"]
+        id_list.append(track["id"])
+    return id_list
+
+# Function to retrieve details from tracks
+def retrieve_track_data(track_id):
+    meta = sp.track(track_id)
+    # I only need the name of the track and the artist, get it here
+    track_details = {"name": meta["name"], "artist": meta["album"]["artists"][0]["name"]}
+    return track_details
+
+# Delete data option
+def delete_data():
     # Delete files that end up in the directory containing 'main.py'
     #delete_file("spotify-playlist-downloader.log", run_dir)
-    delete_file("client_id.secret", run_dir)
-    delete_file("spotify_secret.secret", run_dir)
+    delete_file("client-id.secret", run_dir)
+    delete_file("spotify-secret.secret", run_dir)
     delete_file_match("playlist-", run_dir)
     # Delete everything in the output directory and the directory itself
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
+
+# User options and input
+print("""
+SPOTIFY-PLAYLIST-DOWNLOADER
+(get you client ID and secret from 'developer.spotify.com')
+
+[1] Download playlists
+[2] Delete data (client ID, secret, logs, output, etc.)
+""")
+choice = input(">> ")
+
+if choice == "1":
+    download_playlist()
+
+elif choice == "2":
+    delete_data()
 
 # Backup in case of ID10T error
 else:
