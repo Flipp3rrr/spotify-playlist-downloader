@@ -1,9 +1,12 @@
+.cache
+.DS_Store
 
+# Files created by program
 *.log
 *.secret
-.cache
 *.json
-/output/*
-.DS_Store
 *.part
 *.mp3
+
+# Output folder
+/output/*
