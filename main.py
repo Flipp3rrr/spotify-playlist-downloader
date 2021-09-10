@@ -34,27 +34,48 @@ out_dir = os.path.join(run_dir, "spotify-download-output")
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 
-# Function to retrieve data from a file, or ask for the information to then put in a file
-def retrieve_from_file(filename, purpose):
-    # Check for file and then read data from file
-    if os.path.exists(filename):
-        logging.info("Checked for '{file}' and it exists".format(file=filename))
-        with open(filename, "r") as file:
-            data_from_file = file.read().replace("\n", "")
-        logging.info("Data retrieved from '{file}'".format(file=filename))
-        # Return data
-        return(data_from_file)
-    # Ask for data and write if file didn't exist in check
+# Argparse setup
+parser = argparse.ArgumentParser()
+
+# CLI arguments
+parser.add_argument("-ng", "--nogui", help="Run the interactive command line interface instead of the GUI", action="store_true")
+parser.add_argument("-sc", "--script", help="Run the command without asking for input", action="store_true")
+parser.add_argument("-id", "--id", help="Specify the Spotify ID to be used")
+parser.add_argument("-s", "--secret", help="Specify the Spotify secret to be used")
+parser.add_argument("-p", "--playlist", help="Specify the playlist to download", type=str)
+parser.add_argument("-cd", "--cleardata", help="Delete all saved data", action="store_true")
+
+args = parser.parse_args()
+
+# Function to retrieve secret from a file, or ask for the information to then put in a file
+def get_secret(secret):
+    if secret == "client-id" and args.id:
+        return args.id
+    elif secret == "spotify-secret" and args.secret:
+        return args.secret
     else:
-        logging.info("Checked for '{file}' and it does not exist".format(file=filename))
-        open(filename, "w+")
-        logging.info("'{file}' created".format(file=filename))
-        data_to_file = input("{purpose}: ".format(purpose=purpose))
-        with open(filename, "a") as file:
-            file.write(data_to_file)
-        logging.info("{purpose} saved to '{file}'".format(purpose=purpose, file=filename))
-        # Return data
-        return(data_to_file)
+        filename = "{name}.secret".format(name=secret)
+        purpose = secret
+
+        # Check for file, then read secret from file
+        if os.path.exists(filename):
+            logging.info("Checked for '{file}' and it exists".format(file=filename))
+            with open(filename, "r") as file:
+                data_from_file = file.read().replace("\n", "")
+            logging.info("Data retrieved fromd '{file}'".format(file=filename))
+            # Return secret
+            return(data_from_file)
+        # Ask for secret and write, for when file didn't exist in check
+        else:
+            logging.info("Checked for '{file}' and it does not exist".format(file=filename))
+            open(filename, "w+")
+            logging.info("'{file}' created".format(file=filename))
+            data_to_file = input("{purpose}: ".format(purpose=purpose))
+            with open(filename, "a") as file:
+                file.write(data_to_file)
+            logging.info("{purpose} saved to '{file}'".format(purpose=purpose, file=filename))
+            # Return secret
+            return(data_to_file)
 
 # Function to delete a file, if it exists
 def delete_file(filename, directory):
@@ -71,18 +92,21 @@ def delete_file_match(match, directory):
             os.remove(os.path.join(run_dir, file))
 
 # Get IDs, secrets and credentials ready
-client_id = retrieve_from_file("client-id.secret", "Spotify client ID")
-spotify_secret = retrieve_from_file("spotify-secret.secret", "Spotify secret")
+client_id = get_secret("client-id")
+spotify_secret = get_secret("spotify-secret")
 # ID and secret to SpotifyClientCredentials
 client_creds = SpotifyClientCredentials(client_id, spotify_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_creds)
 
 # Download playlist option
 def download_playlist():
-    # Ask for the URL to the playlist
-    playlist_url = input("Playlist URL: ")
+    if args.script:
+        playlist_url = args.playlist
+    else:
+        playlist_url = input("Playlist URL: ")
+
     # Playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
-    #                (34)                              (ID)(20)
+    #                (34)                              (ID)    (20)
     # Now remove the first 34 and last 20 characters to get the playlist ID
     playlist_id = playlist_url[34:-20] # Yeah hardcoding this is a bad idea, need to fix it sometime
 
@@ -217,22 +241,29 @@ def delete_data():
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
 
-# User options and input
-print("""
-SPOTIFY-PLAYLIST-DOWNLOADER
-(get you client ID and secret from 'developer.spotify.com')
+if args.script:
+    if args.playlist:
+        download_playlist()
+    else:
+        parser.error("Playlist has to be specified with --playlist URL")
 
-[1] Download playlists
-[2] Delete data (client ID, secret, logs, output, etc.)
-""")
-choice = input(">> ")
+elif args.nogui:
+    # User options and input
+    print("""
+    SPOTIFY-PLAYLIST-DOWNLOADER
+    (get you client ID and secret from 'developer.spotify.com')
 
-if choice == "1":
-    download_playlist()
+    [1] Download playlists
+    [2] Delete data (client ID, secret, logs, output, etc.)
+    """)
+    choice = input(">> ")
 
-elif choice == "2":
-    delete_data()
+    if choice == "1":
+        download_playlist()
 
-# Backup in case of ID10T error
-else:
-    print("No such option")
+    elif choice == "2":
+        delete_data()
+
+    # Backup in case of ID10T error
+    else:
+        print("No such option")
