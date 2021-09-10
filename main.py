@@ -82,16 +82,15 @@ def delete_file_match(match, directory):
         if file.startswith(match):
             os.remove(os.path.join(run_dir, file))
 
+# Get IDs, secrets and credentials ready
+client_id = retrieve_from_file("client-id.secret", "Spotify client ID")
+spotify_secret = retrieve_from_file("spotify-secret.secret", "Spotify secret")
+# ID and secret to SpotifyClientCredentials
+client_creds = SpotifyClientCredentials(client_id, spotify_secret)
+sp = spotipy.Spotify(client_credentials_manager=client_creds)
+
 # Download playlist option
 def download_playlist():
-    # Get ID and secret
-    client_id = retrieve_from_file("client-id.secret", "Spotify client ID")
-    spotify_secret = retrieve_from_file("spotify-secret.secret", "Spotify secret")
-
-    # ID and secret to SpotifyClientCredentials
-    client_creds = SpotifyClientCredentials(client_id, spotify_secret)
-    sp = spotipy.Spotify(client_credentials_manager=client_creds)
-
     # Ask for the URL to the playlist
     playlist_url = input("Playlist URL: ")
     # Playlist URL = https://open.spotify.com/playlist/<ID>?si=<junk>
@@ -204,7 +203,7 @@ def download_playlist():
                 logging.warning("Couldn't move {file} because {error}".format(file=filename, error=error))
 
 # Function to retrieve track IDs from playlist
-def retrieve_track_ids(id):
+def retrieve_track_ids(playlist_id):
     id_list = []
     playlist = sp.playlist(playlist_id)
     for item in playlist["tracks"]["items"]:
