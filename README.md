@@ -7,14 +7,14 @@ A tool to download playlists from Spotify from YouTube
 ## Usage
 You can run the program with `python3 main.py --nogui`
 ### Command line options
-| Option            | Help text                                                     | Implemented? |
-| ----------------- | ------------------------------------------------------------- | ------------ |
-| `-ng, --nogui`    | Run the interactive command line interface instead of the GUI | Mostly       |
-| `-sc, --script`   | Run the command without asking for input                      | Mostly       |
-| `-id, --id`       | Specify the Spotify ID to be used                             | Yes          |
-| `-s, --secret`    | Specify the Spotify secret to be used                         | Yes          |
-| `-p, --playlist`  | Specify the playlist to download                              | Yes          |
-| `-cd, --clearata` | Delete all saved data                                         | No           |
+| Option             | Help text                                                     | Implemented? |
+| ------------------ | ------------------------------------------------------------- | ------------ |
+| `-ng, --nogui`     | Run the interactive command line interface instead of the GUI | Mostly       |
+| `-sc, --script`    | Run the command without asking for input                      | Mostly       |
+| `-id, --id`        | Specify the Spotify ID to be used                             | Yes          |
+| `-s, --secret`     | Specify the Spotify secret to be used                         | Yes          |
+| `-p, --playlist`   | Specify the playlist to download                              | Yes          |
+| `-cd, --cleardata` | Delete all saved data                                         | No           |
 ## Contributing
 I don't expect anyone to contribute, but it's nice to have these resources that I used saved here.
 ### Resources
