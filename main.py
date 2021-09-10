@@ -253,7 +253,10 @@ def delete_data():
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
 
-if args.script:
+if args.cleardata:
+    delete_data()
+
+elif args.script:
     if args.playlist:
         download_playlist()
     else:
