@@ -47,6 +47,17 @@ parser.add_argument("-cd", "--cleardata", help="Delete all saved data", action="
 
 args = parser.parse_args()
 
+# Silence youtube_dl output
+class youtube_dl_logger(object):
+    def debug(self, msg):
+        pass
+
+    def warning(self, msg):
+        pass
+
+    def error(self, msg):
+        print(msg)
+
 # Function to retrieve secret from a file, or ask for the information to then put in a file
 def get_secret(secret):
     if secret == "client-id" and args.id:
@@ -195,6 +206,7 @@ def download_playlist():
                 "outtmpl": filename,
                 # Again disable SSL
                 "nocheckcertificate": True,
+                "logger": youtube_dl_logger(),
             }
 
             # Actual download
