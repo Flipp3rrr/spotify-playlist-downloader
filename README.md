@@ -5,7 +5,7 @@ A tool to download playlists from Spotify from YouTube
 * youtube_dl (`pip3 install -U youtube_dl`)
 * a client ID and client secret (from `developer.spotify.com`)
 ## Usage
-You can run the program with `python3 main.py --nogui`
+The GUI is yet to be implemented, until then you can run the program with `python3 main.py --nogui`
 ### Command line options
 | Option             | Help text                                                     | Implemented? |
 | ------------------ | ------------------------------------------------------------- | ------------ |
