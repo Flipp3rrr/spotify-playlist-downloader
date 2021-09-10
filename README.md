@@ -14,7 +14,7 @@ You can run the program with `python3 main.py --nogui`
 | `-id, --id`        | Specify the Spotify ID to be used                             | Yes          |
 | `-s, --secret`     | Specify the Spotify secret to be used                         | Yes          |
 | `-p, --playlist`   | Specify the playlist to download                              | Yes          |
-| `-cd, --cleardata` | Delete all saved data                                         | No           |
+| `-cd, --cleardata` | Delete all saved data                                         | Yes          |
 ## Contributing
 I don't expect anyone to contribute, but it's nice to have these resources that I used saved here.
 ### Resources
