@@ -59,34 +59,39 @@ class youtube_dl_logger(object):
         print(msg)
 
 # Function to retrieve secret from a file, or ask for the information to then put in a file
-def get_secret(secret):
-    if secret == "client-id" and args.id:
-        return args.id
-    elif secret == "spotify-secret" and args.secret:
-        return args.secret
-    else:
-        filename = "{name}.secret".format(name=secret)
-        purpose = secret
+def get_setting(name):
+    purpose = name
+    settings_file_path = os.path.join(run_dir, "settings.json")
+    if os.path.exists(settings_file_path):
+        with open(settings_file_path) as settings_file:
+            settings = json.load(settings_file)
 
-        # Check for file, then read secret from file
-        if os.path.exists(filename):
-            logging.info("Checked for '{file}' and it exists".format(file=filename))
-            with open(filename, "r") as file:
-                data_from_file = file.read().replace("\n", "")
-            logging.info("Data retrieved fromd '{file}'".format(file=filename))
-            # Return secret
-            return(data_from_file)
-        # Ask for secret and write, for when file didn't exist in check
+        if name in settings:
+            return_value = settings[name]
+            return(return_value)
         else:
-            logging.info("Checked for '{file}' and it does not exist".format(file=filename))
-            open(filename, "w+")
-            logging.info("'{file}' created".format(file=filename))
-            data_to_file = input("{purpose}: ".format(purpose=purpose))
-            with open(filename, "a") as file:
-                file.write(data_to_file)
-            logging.info("{purpose} saved to '{file}'".format(purpose=purpose, file=filename))
-            # Return secret
-            return(data_to_file)
+            new_key = name
+            new_value = input("{purpose}: ".format(purpose = purpose))
+            new_dict = {"{key}".format(key = new_key): "{value}".format(value = new_value)}
+
+            settings.update(new_dict)
+            settings_file = open(settings_file_path, "w+")
+            json.dump(settings, settings_file, indent = 4)
+
+            return_value = settings[name]
+            return(return_value)
+
+    else:
+        new_key = name
+        new_value = input("{purpose}: ".format(purpose = purpose))
+        new_dict = {"{key}".format(key = new_key): "{value}".format(value = new_value)}
+
+        settings = new_dict
+        settings_file = open(settings_file_path, "w+")
+        json.dump(settings, settings_file, indent = 4)
+
+        return_value = settings[name]
+        return(return_value)
 
 # Function to delete a file, if it exists
 def delete_file(filename, directory):
@@ -103,8 +108,8 @@ def delete_file_match(match, directory):
             os.remove(os.path.join(run_dir, file))
 
 # Get IDs, secrets and credentials ready
-client_id = get_secret("client-id")
-spotify_secret = get_secret("spotify-secret")
+client_id = get_setting("client-id")
+spotify_secret = get_setting("spotify-secret")
 # ID and secret to SpotifyClientCredentials
 client_creds = SpotifyClientCredentials(client_id, spotify_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_creds)
