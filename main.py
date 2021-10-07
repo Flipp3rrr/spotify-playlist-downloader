@@ -114,6 +114,15 @@ spotify_secret = get_setting("spotify-secret")
 client_creds = SpotifyClientCredentials(client_id, spotify_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_creds)
 
+# Function to retrieve track IDs from playlist
+def retrieve_track_ids(playlist_id):
+    id_list = []
+    playlist = sp.playlist(playlist_id)
+    for item in playlist["tracks"]["items"]:
+        track = item["track"]
+        id_list.append(track["id"])
+    return id_list
+
 # Download playlist option
 def download_playlist():
     if args.script:
@@ -230,15 +239,6 @@ def download_playlist():
                 print("Downloaded {track} and moved to {location}".format(track=current_track_name, location=file_place))
             except Exception as error:
                 logging.warning("Couldn't move {file} because {error}".format(file=filename, error=error))
-
-# Function to retrieve track IDs from playlist
-def retrieve_track_ids(playlist_id):
-    id_list = []
-    playlist = sp.playlist(playlist_id)
-    for item in playlist["tracks"]["items"]:
-        track = item["track"]
-        id_list.append(track["id"])
-    return id_list
 
 # Function to retrieve details from tracks
 def retrieve_track_data(track_id):
